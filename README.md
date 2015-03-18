@@ -1,2 +1,3 @@
 # NeuralNetwork-ZipCodeData
 statistical methods used: principal component analysis, feed forward, and back propagation using gradient descent
+<a href="http://nbviewer.ipython.org/github/tavant/NeuralNetwork-ZipCodeData/blob/master/NeuralNetwork.ipynb">Statistical methods used: principal component analysis, feed forward neural network with back propagation using gradient descent, and delta-bar-delta algorithm used to identify step size in gradient descent.</a>
