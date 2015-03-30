@@ -1,6 +1,7 @@
 #!/usr/bin/python
 
 # imported libraries
+import gzip as gz
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -13,16 +14,16 @@ def seperate_data(filename):
        outputs:
     '''
 
-	# get data from the file
-	with gz.open(filename) as f:
-		data = np.loadtxt(filename)
+    # get data from the file
+    with gz.open(filename) as f:
+        data = np.loadtxt(f)
 
-	# seperate observations from labels
-	X = data[:,1:]
-	y = data[:,0]
+    # seperate observations from labels
+    X = data[:,1:]
+    y = data[:,0]
 
-	# return the data
-	return X, y
+    # return the data
+    return X, y
 
 # digt data function 2 of 2
 def vectorize_digit_labels(labels):
@@ -171,7 +172,7 @@ def single_hidden_train(data, labels, num_features=None, k_units=20, iterations=
     W_2_bar = np.random.uniform(0.01, 0.1, (k_units + 1, m_outputs)) # (K + 1) x M
     
     # define node functions sigmoid and sigmoid_prime
-    sigmoid = lambda vec_x: 1 / (1 + exp(-vec_x))
+    sigmoid = lambda vec_x: 1 / (1 + np.exp(-vec_x))
     sigmoid_prime = lambda vec_x: sigmoid(vec_x) * (1 - sigmoid(vec_x))
     
     # define error function
@@ -204,26 +205,26 @@ def single_hidden_train(data, labels, num_features=None, k_units=20, iterations=
 
                 # get input vector which, for consistancy, we will call output_0 and add bias term
                 output_0 = data[sample_idx,:][np.newaxis,:] # 1 x N
-                output_0_hat = np.hstack((output_0, ones((1, 1)))) # 1 x (N + 1)
+                output_0_hat = np.hstack((output_0, np.ones((1, 1)))) # 1 x (N + 1)
                 
                 # caculate output_1 and add bias term
-                output_1 = sigmoid(dot(output_0_hat, W_1_bar)) # 1 x K
-                output_1_hat = np.hstack((output_1, ones((1, 1)))) # 1 x (K + 1)
+                output_1 = sigmoid(np.dot(output_0_hat, W_1_bar)) # 1 x K
+                output_1_hat = np.hstack((output_1, np.ones((1, 1)))) # 1 x (K + 1)
                 
                 # caculate output_2 and convert to vectorized label
                 output_2 = sigmoid(np.dot(output_1_hat, W_2_bar)) # 1 x M
-                new_output_2 = zeros(output_2.shape)
+                new_output_2 = np.zeros(output_2.shape)
                 new_output_2[:,np.argmax(output_2)] = 1
                 
                 # caculate derivatives of output_1 and output_2 and store in diagonal matrices
-                D_1 = diagflat(sigmoid_prime(np.dot(output_0_hat, W_1_bar))) # K x K
-                D_2 = diagflat(sigmoid_prime(np.dot(output_1_hat, W_2_bar))) # M x M
+                D_1 = np.diagflat(sigmoid_prime(np.dot(output_0_hat, W_1_bar))) # K x K
+                D_2 = np.diagflat(sigmoid_prime(np.dot(output_1_hat, W_2_bar))) # M x M
                 
                 # caculate difference in error
                 error_diff = new_output_2 - labels[sample_idx,:][np.newaxis,:] # 1 x M
                 
                 # caculate sum of the sample's error
-                sample_error[sample_idx] = sum(error_func(error_diff))
+                sample_error[sample_idx] = np.sum(error_func(error_diff))
                 
                 # --------------------------------------------------------------------------------
                 # step two: backpropagation to the output layer
